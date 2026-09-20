@@ -27,7 +27,7 @@ export default function KnowledgeBase({ onTestPolicy }) {
     setIsLoading(true);
     try {
       const data = await api.getPolicies();
-      setPolicies(data);
+      setPolicies(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to load policies:", err);
     } finally {
@@ -48,16 +48,18 @@ export default function KnowledgeBase({ onTestPolicy }) {
     'Workplace & Remote Enablement'
   ];
 
-  const filteredPolicies = policies.filter((p) => {
+  const policyList = Array.isArray(policies) ? policies : [];
+  const filteredPolicies = policyList.filter((p) => {
+    if (!p) return false;
     if (categoryFilter !== 'All' && p.category !== categoryFilter) return false;
     if (searchTerm) {
       const s = searchTerm.toLowerCase();
       const match = (
-        p.id.toLowerCase().includes(s) ||
-        p.title.toLowerCase().includes(s) ||
-        p.description.toLowerCase().includes(s) ||
-        p.eligibility.toLowerCase().includes(s) ||
-        p.tags.some(t => t.toLowerCase().includes(s))
+        (p.id || '').toLowerCase().includes(s) ||
+        (p.title || '').toLowerCase().includes(s) ||
+        (p.description || '').toLowerCase().includes(s) ||
+        (p.eligibility || '').toLowerCase().includes(s) ||
+        (p.tags || []).some(t => t.toLowerCase().includes(s))
       );
       if (!match) return false;
     }

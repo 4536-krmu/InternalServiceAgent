@@ -35,9 +35,10 @@ export default function AuditLogs({ onSelectTicketId, addToast }) {
         eventType: eventTypeFilter,
         ticketId: ticketSearch || undefined
       });
-      setLogs(data);
+      setLogs(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to load audit logs:", err);
+      setLogs([]);
     } finally {
       setIsLoading(false);
     }
