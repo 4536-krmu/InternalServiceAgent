@@ -7,7 +7,8 @@ import {
   Sun, 
   Moon, 
   UserPlus,
-  Lock
+  Lock,
+  Menu
 } from 'lucide-react';
 
 export default function Header({ 
@@ -19,7 +20,8 @@ export default function Header({
   isResetting,
   isDark,
   onToggleTheme,
-  onOpenAddAccount
+  onOpenAddAccount,
+  onToggleMobileMenu
 }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -45,13 +47,22 @@ export default function Header({
   };
 
   return (
-    <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 flex items-center justify-between z-30 shadow-sm transition-colors duration-200">
-      {/* Breadcrumb & Title */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center text-xs text-slate-500 dark:text-slate-400 font-medium">
-          <span className="hover:text-slate-800 dark:hover:text-slate-200">Veridian Corp</span>
-          <span className="mx-2 text-slate-300 dark:text-slate-700">/</span>
-          <span className="text-slate-900 dark:text-white font-semibold">{pageTitles[activePage] || 'Portal'}</span>
+    <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3 sm:px-6 flex items-center justify-between z-30 shadow-sm transition-colors duration-200">
+      {/* Breadcrumb, Title & Mobile Hamburger Button */}
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        {/* Mobile Hamburger */}
+        <button
+          onClick={onToggleMobileMenu}
+          title="Open Navigation Menu"
+          className="p-2 -ml-1 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg md:hidden transition-colors flex-shrink-0"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
+        <div className="flex items-center text-xs text-slate-500 dark:text-slate-400 font-medium truncate">
+          <span className="hidden sm:inline hover:text-slate-800 dark:hover:text-slate-200">Veridian Corp</span>
+          <span className="hidden sm:inline mx-2 text-slate-300 dark:text-slate-700">/</span>
+          <span className="text-slate-900 dark:text-white font-semibold truncate">{pageTitles[activePage] || 'Portal'}</span>
         </div>
       </div>
 

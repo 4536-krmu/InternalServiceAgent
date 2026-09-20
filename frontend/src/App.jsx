@@ -119,6 +119,7 @@ export default function App() {
   const [toasts, setToasts] = useState([]);
   const [isResetting, setIsResetting] = useState(false);
   const [isAddAccountOpen, setIsAddAccountOpen] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Default to light mode unless user toggles or saved
   const [isDark, setIsDark] = useState(() => {
@@ -238,11 +239,13 @@ export default function App() {
 
   return (
     <div className="flex h-screen bg-slate-100 dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-100 antialiased overflow-hidden transition-colors duration-200">
-      {/* Fixed Sticky Sidebar */}
+      {/* Responsive Sidebar (Drawer on mobile, fixed column on desktop) */}
       <Sidebar 
         activePage={activePage} 
         setActivePage={setActivePage} 
         ticketCounts={activeTicketCounts} 
+        isMobileOpen={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
       />
 
       {/* Main Content Area */}
@@ -258,6 +261,7 @@ export default function App() {
           isDark={isDark}
           onToggleTheme={toggleTheme}
           onOpenAddAccount={() => setIsAddAccountOpen(true)}
+          onToggleMobileMenu={() => setIsMobileSidebarOpen(prev => !prev)}
         />
 
         {/* Page Content Scroll View */}

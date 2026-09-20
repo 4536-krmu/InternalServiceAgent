@@ -61,7 +61,7 @@ export const api = {
       });
       return await handleResponse(res);
     } catch (err) {
-      console.warn("Backend API unavailable for submitRequest, executing client-side ReAct agent:", err.message);
+      console.debug("Backend API unavailable for submitRequest, executing client-side ReAct agent:", err.message);
       const requester = (getStored(STORAGE_KEYS.PERSONAS, FALLBACK_PERSONAS) || []).find(p => p.id === data.requester_id) || FALLBACK_PROFILE;
       const evaluation = evaluateAgentLocally(data.title + ' ' + (data.description || ''), requester);
       
@@ -101,7 +101,7 @@ export const api = {
       });
       return await handleResponse(res);
     } catch (err) {
-      console.warn("Backend API unavailable for quickQuery, executing client-side ReAct agent:", err.message);
+      console.debug("Backend API unavailable for quickQuery, executing client-side ReAct agent:", err.message);
       const requester = (getStored(STORAGE_KEYS.PERSONAS, FALLBACK_PERSONAS) || []).find(p => p.id === requesterId) || FALLBACK_PROFILE;
       const agentResponse = evaluateAgentLocally(query, requester);
       return {
@@ -130,7 +130,7 @@ export const api = {
       }
       return getStored(STORAGE_KEYS.TICKETS, FALLBACK_TICKETS);
     } catch (err) {
-      console.warn("Using cached/fallback tickets:", err.message);
+      console.debug("Using cached/fallback tickets:", err.message);
       return getStored(STORAGE_KEYS.TICKETS, FALLBACK_TICKETS);
     }
   },
@@ -156,7 +156,7 @@ export const api = {
       });
       return await handleResponse(res);
     } catch (err) {
-      console.warn("Executing ticket action locally:", err.message);
+      console.debug("Executing ticket action locally:", err.message);
       const tickets = getStored(STORAGE_KEYS.TICKETS, FALLBACK_TICKETS);
       const ticket = tickets.find(t => t.id === ticketId);
       if (ticket) {
@@ -184,7 +184,7 @@ export const api = {
       if (Array.isArray(data) && data.length > 0) return data;
       return FALLBACK_POLICIES;
     } catch (err) {
-      console.warn("Using fallback IT policies (KB-01 to KB-10):", err.message);
+      console.debug("Using fallback IT policies (KB-01 to KB-10):", err.message);
       return FALLBACK_POLICIES;
     }
   },
@@ -214,7 +214,7 @@ export const api = {
       if (Array.isArray(data) && data.length > 0) return data;
       return getStored(STORAGE_KEYS.AUDIT_LOGS, FALLBACK_AUDIT_LOGS);
     } catch (err) {
-      console.warn("Using fallback audit traces:", err.message);
+      console.debug("Using fallback audit traces:", err.message);
       return getStored(STORAGE_KEYS.AUDIT_LOGS, FALLBACK_AUDIT_LOGS);
     }
   },
