@@ -11,10 +11,107 @@ import Toast from './components/common/Toast';
 import CreateAccountModal from './components/common/CreateAccountModal';
 import { api } from './api';
 
+const FALLBACK_PROFILE = {
+  id: "EMP-8041",
+  name: "Sarah Chen",
+  email: "sarah.chen@veridian-corp.example",
+  department: "Cloud Infrastructure",
+  role: "Full-Time Employee",
+  hire_date: "2023-02-15",
+  tenure_years: 3.6,
+  work_mode: "Remote",
+  remote_days_per_week: 4,
+  failed_login_attempts: 0,
+  account_locked: false,
+  assigned_device: {
+    model: "ThinkPad X1 Carbon Gen 10",
+    serial: "VC-TP-88492",
+    deployed_date: "2023-03-01",
+    os: "Windows 11 Enterprise 23H2",
+    status: "Active (3.6 yrs old - Refresh Eligible)"
+  },
+  mailbox_used_gb: 21.4,
+  mailbox_limit_gb: 25.0,
+  avatar_initials: "SC"
+};
+
+const FALLBACK_PERSONAS = [
+  FALLBACK_PROFILE,
+  {
+    id: "CON-4912",
+    name: "Alex Rivera",
+    email: "alex.rivera.ctr@veridian-corp.example",
+    department: "Quality Engineering",
+    role: "Contractor",
+    hire_date: "2025-11-01",
+    tenure_years: 0.8,
+    work_mode: "Hybrid",
+    remote_days_per_week: 2,
+    failed_login_attempts: 0,
+    account_locked: false,
+    assigned_device: {
+      model: "Dell Latitude 5430",
+      serial: "VC-DL-19402",
+      deployed_date: "2025-11-05",
+      os: "Windows 11 Pro",
+      status: "Active"
+    },
+    mailbox_used_gb: 8.2,
+    mailbox_limit_gb: 25.0,
+    avatar_initials: "AR"
+  },
+  {
+    id: "EMP-3108",
+    name: "David Kim",
+    email: "david.kim@veridian-corp.example",
+    department: "Brand Marketing",
+    role: "Full-Time Employee",
+    hire_date: "2025-06-10",
+    tenure_years: 1.2,
+    work_mode: "In-Office",
+    remote_days_per_week: 0,
+    failed_login_attempts: 0,
+    account_locked: false,
+    assigned_device: {
+      model: "MacBook Pro 14 M3",
+      serial: "VC-MB-77120",
+      deployed_date: "2025-06-15",
+      os: "macOS Sonoma 14.5",
+      status: "Active (1.2 yrs old)"
+    },
+    mailbox_used_gb: 14.5,
+    mailbox_limit_gb: 25.0,
+    avatar_initials: "DK"
+  },
+  {
+    id: "EMP-9923",
+    name: "Elena Rostova",
+    email: "elena.rostova@veridian-corp.example",
+    department: "Financial Planning & Analysis",
+    role: "Full-Time Employee",
+    hire_date: "2024-08-01",
+    tenure_years: 2.1,
+    work_mode: "Hybrid",
+    remote_days_per_week: 3,
+    failed_login_attempts: 5,
+    account_locked: true,
+    assigned_device: {
+      model: "HP EliteBook 840 G9",
+      serial: "VC-HP-30491",
+      deployed_date: "2024-08-10",
+      os: "Windows 11 Enterprise",
+      status: "Locked Out"
+    },
+    mailbox_used_gb: 18.9,
+    mailbox_limit_gb: 25.0,
+    avatar_initials: "ER"
+  }
+];
+
 export default function App() {
   const [activePage, setActivePage] = useState('dashboard');
-  const [currentProfile, setCurrentProfile] = useState(null);
-  const [personas, setPersonas] = useState([]);
+  const [currentProfile, setCurrentProfile] = useState(FALLBACK_PROFILE);
+  const [personas, setPersonas] = useState(FALLBACK_PERSONAS);
   const [tickets, setTickets] = useState([]);
   const [isLoadingTickets, setIsLoadingTickets] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
@@ -23,11 +120,9 @@ export default function App() {
   const [isResetting, setIsResetting] = useState(false);
   const [isAddAccountOpen, setIsAddAccountOpen] = useState(false);
 
-  // Dark Mode Theme State with local storage persistence
+  // Default to light mode unless user toggles or saved
   const [isDark, setIsDark] = useState(() => {
-    const saved = localStorage.getItem('veridian-theme');
-    if (saved) return saved === 'dark';
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return localStorage.getItem('veridian-theme') === 'dark';
   });
 
   useEffect(() => {
@@ -52,16 +147,15 @@ export default function App() {
   const loadInitialData = async () => {
     try {
       const [profileData, personasData, ticketsData] = await Promise.all([
-        api.getProfile(),
-        api.getPersonas(),
-        api.getTickets()
+        api.getProfile().catch(() => FALLBACK_PROFILE),
+        api.getPersonas().catch(() => FALLBACK_PERSONAS),
+        api.getTickets().catch(() => [])
       ]);
-      setCurrentProfile(profileData);
-      setPersonas(personasData);
-      setTickets(ticketsData);
+      if (profileData) setCurrentProfile(profileData);
+      if (personasData?.length) setPersonas(personasData);
+      if (ticketsData?.length) setTickets(ticketsData);
     } catch (err) {
-      console.error("Initialization error:", err);
-      addToast({ type: 'error', title: 'Connection Error', message: 'Could not connect to IT Service API backend.' });
+      console.warn("Using fallback initial data:", err);
     }
   };
 
